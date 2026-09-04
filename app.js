@@ -1,11 +1,22 @@
 import { translations } from "./translations.js";
+import {
+  LANGUAGE_STORAGE_KEY,
+  MILESTONE_STORAGE_KEY,
+  SUPPORTED_LANGUAGES,
+  slug,
+  createTr,
+  parseHash,
+  isValidLanguage,
+  readMilestoneState as readMilestoneStateUtil,
+  milestoneIsUnlocked as milestoneIsUnlockedUtil,
+  cascadeUncheck,
+  searchableText as searchableTextUtil,
+  filterSearchResults,
+} from "./utils.js";
 
 const PLAYLIST_ID = "PLKahf_QP41Lk";
 const PLAYLIST_URL = `https://www.youtube.com/playlist?list=${PLAYLIST_ID}`;
-const LANGUAGE_STORAGE_KEY = "breeze-language";
-const MILESTONE_STORAGE_KEY = "breeze-merchant-milestones";
-const SUPPORTED_LANGUAGES = ["en", "kn", "hi", "bn"];
-let currentLanguage = SUPPORTED_LANGUAGES.includes(localStorage.getItem(LANGUAGE_STORAGE_KEY))
+let currentLanguage = isValidLanguage(localStorage.getItem(LANGUAGE_STORAGE_KEY))
   ? localStorage.getItem(LANGUAGE_STORAGE_KEY)
   : "en";
 
@@ -546,7 +557,7 @@ const flatPages = sections.flatMap((section) =>
 );
 
 function currentId() {
-  const id = window.location.hash.replace(/^#/, "");
+  const id = parseHash(window.location.hash);
   return pages[id] ? id : "introduction";
 }
 
@@ -747,13 +758,6 @@ function renderPageNav(id) {
   `;
 }
 
-function slug(value) {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-}
-
 function renderSidebar() {
   const id = currentId();
   const nav = document.querySelector("#sidebar-nav");
@@ -837,22 +841,11 @@ function closeSearch() {
 }
 
 function searchableText(id) {
-  const page = pages[id];
-  const phaseText = page.phases
-    ? page.phases.flatMap((phase) => [tr(phase.title), ...phase.steps.flat().map(tr)]).join(" ")
-    : page.groups
-      ? page.groups.flatMap((group) => [tr(group.title), tr(group.description)]).join(" ")
-      : page.apps
-        ? page.apps.flatMap((app) => [app.name, tr(app.label), tr(app.description), ...app.features.map(tr)]).join(" ")
-        : "";
-  return `${page.title} ${page.description} ${tr(page.title)} ${tr(page.description)} ${phaseText}`;
+  return searchableTextUtil(id, pages, tr);
 }
 
 function filterSearch(query) {
-  const value = query.trim().toLowerCase();
-  const results = flatPages.filter((page) =>
-    searchableText(page.id).toLowerCase().includes(value),
-  );
+  const results = filterSearchResults(query, flatPages, pages, tr);
   document.querySelector("#search-results").innerHTML = results.length
     ? results
         .map(
@@ -864,22 +857,17 @@ function filterSearch(query) {
           `,
         )
         .join("")
-    : `<div class="search-empty">${tr("No documentation found")} “${query}”.</div>`;
+    : `<div class="search-empty">${tr("No documentation found")} "${query}".</div>`;
 }
 
 function readMilestoneState() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(MILESTONE_STORAGE_KEY) || "{}");
-    return Object.fromEntries(milestones.map(({ id }) => [id, saved[id] === true]));
-  } catch {
-    return Object.fromEntries(milestones.map(({ id }) => [id, false]));
-  }
+  return readMilestoneStateUtil(milestones, MILESTONE_STORAGE_KEY);
 }
 
 let milestoneState = readMilestoneState();
 
 function milestoneIsUnlocked(milestone) {
-  return !milestone.prerequisites || milestone.prerequisites.every((id) => milestoneState[id]);
+  return milestoneIsUnlockedUtil(milestone, milestoneState);
 }
 
 function renderMilestones() {
@@ -1042,19 +1030,7 @@ document.querySelector("#language-select").addEventListener("change", (event) =>
 document.querySelector("#milestone-list").addEventListener("change", (event) => {
   const input = event.target.closest("[data-milestone-id]");
   if (!input) return;
-  milestoneState[input.dataset.milestoneId] = input.checked;
-
-  let changed = true;
-  while (changed) {
-    changed = false;
-    milestones.forEach((milestone) => {
-      if (milestoneState[milestone.id] && !milestoneIsUnlocked(milestone)) {
-        milestoneState[milestone.id] = false;
-        changed = true;
-      }
-    });
-  }
-
+  milestoneState = cascadeUncheck(input.dataset.milestoneId, input.checked, milestones, milestoneState);
   localStorage.setItem(MILESTONE_STORAGE_KEY, JSON.stringify(milestoneState));
   if (input.checked) celebrateMilestone();
   renderMilestones();

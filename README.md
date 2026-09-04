@@ -23,6 +23,7 @@ A multilingual documentation and onboarding portal for **super.money Breeze** �
 | Fonts | DM Sans, Manrope (Google Fonts) |
 | Deployment | Vercel (static) |
 | Translations | Google Translate API (auto-generated) |
+| Testing | Vitest |
 
 Zero runtime dependencies.
 
@@ -30,24 +31,52 @@ Zero runtime dependencies.
 
 ```bash
 # Install dependencies
-npm install
+pnpm install
 
 # Start dev server (localhost:3000)
-npm run dev
+pnpm dev
 
 # Production build
-npm run build
+pnpm build
 
 # Preview production build
-npm run preview
+pnpm preview
+
+# Run tests
+pnpm test
 ```
+
+## Testing
+
+The project uses **Vitest** for unit testing. Tests cover the pure, testable logic extracted into `utils.js` as well as the key UI behaviors.
+
+```bash
+pnpm test          # Run all tests once (verbose reporter)
+pnpm test:watch    # Run tests in watch mode
+```
+
+Test files live in `__tests/` and cover:
+
+- **Video playlist matching** — embed/watch URL generation for playlists vs. single videos, title resolution and translation
+- **Milestone tier matching** — locking, activation, and completion states based on prerequisite dependencies
+- **Milestone on-click confetti** — burst count, angle spread, distance variation, and rotating color palette
+- **Dark/Light theme** — theme resolution (dark by default) and color-palette keys
+- **Color coding** — accent color differences between themes, brand palette selection
+- **Font family styles** — Manrope headings, DM Sans body, consistency across themes
+- **Core utilities** — slugging, translations, hash parsing, language validation, milestone state, cascade uncheck, and full-text search
+
+The `vitest.config.js` sets the default reporter to verbose, so every test name is printed individually on each run.
+
+### Git Hooks
+
+A **Husky** pre-commit hook runs **lint-staged**, which executes the test suite on staged JavaScript files before every commit. If a test fails, the commit is blocked until it passes.
 
 ## Translation Pipeline
 
 Translations for Hindi, Kannada, and Bengali are auto-generated from the English source content in `app.js`.
 
 ```bash
-npm run translations:build
+pnpm translations:build
 ```
 
 This script:
@@ -62,6 +91,11 @@ This script:
 ├── index.html                # App shell (sidebar, header, modals, panels)
 ├── styles.css                # All styling — layout, theming, responsive
 ├── translations.js           # Auto-generated i18n strings
+├── utils.js                  # Pure, testable helper functions
+├── vitest.config.js          # Vitest config (verbose reporter)
+├── __tests__/
+│   ├── utils.test.js         # Unit tests for core utilities
+│   └── features.test.js      # Tests for video, milestones, theme, fonts
 ├── scripts/
 │   └── build-translations.mjs  # Translation generation script
 ├── public/
@@ -72,6 +106,15 @@ This script:
 ├── vercel.json               # Vercel rewrites (/docs/* → /)
 └── package.json
 ```
+
+## Test Coverage
+
+Current test suite: **72 tests across 2 files**, all passing.
+
+| Area | Test count |
+|---|---|
+| Core utilities (`utils.test.js`) | 36 |
+| Video, milestones, theme, fonts (`features.test.js`) | 36 |
 
 ## Deployment
 

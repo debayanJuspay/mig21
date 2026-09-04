@@ -6,9 +6,19 @@
     "dev": "vite --port 3000",
     "build": "vite build",
     "preview": "vite preview",
-    "translations:build": "node scripts/build-translations.mjs"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "translations:build": "node scripts/build-translations.mjs",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,mjs}": "vitest run --reporter=verbose",
+    "*.test.{js,mjs}": "vitest run --reporter=verbose"
   },
   "devDependencies": {
-    "vite": "^7.0.0"
+    "husky": "^9.1.7",
+    "lint-staged": "^17.4.1",
+    "vite": "^7.0.0",
+    "vitest": "^5.0.0"
   }
 }

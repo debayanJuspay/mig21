@@ -12,8 +12,8 @@
     "prepare": "husky"
   },
   "lint-staged": {
-    "*.{js,mjs}": "vitest run --reporter=verbose",
-    "*.test.{js,mjs}": "vitest run --reporter=verbose"
+    "*.{js,mjs}": "vitest run --reporter=verbose __tests__",
+    "*.test.{js,mjs}": "vitest run --reporter=verbose __tests__"
   },
   "devDependencies": {
     "husky": "^9.1.7",

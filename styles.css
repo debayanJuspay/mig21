@@ -786,6 +786,28 @@ html:not(.dark) .sun {
   width: 24px;
 }
 
+.app-symbol img {
+  width: 62%;
+  height: 62%;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.app-install-card .app-symbol.custom-icon {
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-install-card .app-symbol.custom-icon img {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+}
+
+.app-install-card.shopify .app-symbol.custom-icon img {
+  box-shadow: 0 0 0 1px var(--border);
+}
+
 .app-type {
   padding: 4px 8px;
   color: var(--muted);
@@ -833,13 +855,19 @@ html:not(.dark) .sun {
   font-weight: 700;
 }
 
-.app-install-card > a {
+.app-install-cta {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.app-install-cta > a {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 7px;
   min-height: 42px;
-  margin-top: auto;
+  flex: 1;
   color: #fff;
   border-radius: 9px;
   background: var(--app-color);
@@ -849,12 +877,22 @@ html:not(.dark) .sun {
   transition: filter 0.2s, transform 0.2s;
 }
 
-.app-install-card > a:hover {
+.app-install-cta > a:hover {
   filter: brightness(1.08);
   transform: translateY(-1px);
 }
 
-.app-install-card > a svg {
+.app-install-cta > a.secondary {
+  color: var(--app-color);
+  background: transparent;
+  border: 1px solid var(--app-color);
+}
+
+.app-install-cta > a.secondary:hover {
+  background: color-mix(in srgb, var(--app-color) 12%, transparent);
+}
+
+.app-install-cta > a svg {
   width: 14px;
 }
 

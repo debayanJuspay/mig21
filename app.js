@@ -438,6 +438,38 @@ const pages = {
       "Extend your commerce stack with AI-powered business insights and a smarter Shopify cart experience.",
     apps: [
       {
+        name: "Breeze Buddy",
+        label: "Shopify App",
+        description:
+          "An automated COD verification tool that uses voice AI to call customers, confirm their orders, and validate address details. It helps merchants reduce RTO by identifying genuine COD orders post purchase, with customizable call triggers, retry logic, and an analytics dashboard for pickup rates, confirmation outcomes, and RTO impact.",
+        url: "https://apps.shopify.com/breeze-buddy",
+        cta: "Install on Shopify",
+        altUrl: "https://breezebuddy.ai/",
+        altCta: "Visit website",
+        kind: "shopify",
+        icon: "/breeze-buddy-favicon.png",
+        image: "/breeze-buddy.svg",
+        imageAlt: "Breeze Buddy automated COD verification",
+        features: [
+          "Detects customer language and speaks in the same language automatically.",
+          "Full control over calling window, retries, and scheduling rules.",
+          "Captures detailed address changes from customers and updates them accurately.",
+        ],
+      },
+      {
+        name: "Cart by Breeze",
+        label: "Shopify App",
+        description:
+          "Turn your cart into a sales tool with personalized upsells, cross-sells, a rewards progress bar, and a customizable mobile-responsive cart drawer.",
+        url: "https://apps.shopify.com/cart-by-breeze",
+        cta: "Install on Shopify",
+        kind: "shopify",
+        icon: "/cart-by-breeze-icon.png",
+        image: "/cart-by-breeze-drawer.png",
+        imageAlt: "Cart by Breeze cart drawer with offers and discounts",
+        features: ["Upsells and cross-sells", "Rewards progress bar", "Customizable cart drawer"],
+      },
+      {
         name: "Breeze Automatic",
         label: "AI Copilot for D2C",
         description:
@@ -448,18 +480,6 @@ const pages = {
         image: "/breeze-automatic.svg",
         imageAlt: "Breeze Automatic",
         features: ["AI-powered insights", "D2C analytics", "Actionable business intelligence"],
-      },
-      {
-        name: "Cart by Breeze",
-        label: "Shopify App",
-        description:
-          "Turn your cart into a sales tool with personalized upsells, cross-sells, a rewards progress bar, and a customizable mobile-responsive cart drawer.",
-        url: "https://apps.shopify.com/cart-by-breeze",
-        cta: "Install on Shopify",
-        kind: "shopify",
-        image: "/cart-by-breeze-drawer.png",
-        imageAlt: "Cart by Breeze cart drawer with offers and discounts",
-        features: ["Upsells and cross-sells", "Rewards progress bar", "Customizable cart drawer"],
       },
     ],
   },
@@ -715,11 +735,13 @@ function renderApps(page) {
                 <img src="${app.image}" alt="${tr(app.imageAlt)}" loading="lazy" />
               </div>
               <div class="app-install-topline">
-                <span class="app-symbol" aria-hidden="true">
+                <span class="app-symbol${app.icon ? " custom-icon" : ""}" aria-hidden="true">
                   ${
-                    app.kind === "shopify"
-                      ? `<svg viewBox="0 0 24 24"><path d="M7 8h10l1 12H6L7 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>`
-                      : `<svg viewBox="0 0 24 24"><path d="m12 3 1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3Z"/><path d="m18 16 .7 2.3L21 19l-2.3.7L18 22l-.7-2.3L15 19l2.3-.7L18 16Z"/></svg>`
+                    app.icon
+                      ? `<img src="${app.icon}" alt="" />`
+                      : app.kind === "shopify"
+                        ? `<svg viewBox="0 0 24 24"><path d="M7 8h10l1 12H6L7 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>`
+                        : `<svg viewBox="0 0 24 24"><path d="m12 3 1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3Z"/><path d="m18 16 .7 2.3L21 19l-2.3.7L18 22l-.7-2.3L15 19l2.3-.7L18 16Z"/></svg>`
                   }
                 </span>
                 <span class="app-type">${tr(app.label)}</span>
@@ -729,9 +751,18 @@ function renderApps(page) {
               <ul>
                 ${app.features.map((feature) => `<li>${tr(feature)}</li>`).join("")}
               </ul>
-              <a href="${app.url}" target="_blank" rel="noreferrer">
-                ${tr(app.cta)} ${externalIcon()}
-              </a>
+              <div class="app-install-cta">
+                <a href="${app.url}" target="_blank" rel="noreferrer">
+                  ${tr(app.cta)} ${externalIcon()}
+                </a>
+                ${
+                  app.altUrl
+                    ? `<a class="secondary" href="${app.altUrl}" target="_blank" rel="noreferrer">
+                        ${tr(app.altCta)} ${externalIcon()}
+                      </a>`
+                    : ""
+                }
+              </div>
             </article>
           `,
         )
